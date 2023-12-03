@@ -3,7 +3,28 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
 
+    def insert(self):
+
+        name = self.name_input.text()
+        phone = self.ph_input.text()   
+        email = self.email_input.text()
+        address = self.address_input.text()
+
         
+        if name and phone and email and address is not None:
+
+            row_index = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row_index)
+
+            # Dictionary of the input field 
+            input_text = {name: self.name_input, phone: self.ph_input, email: self.email_input, address: self.address_input}            
+
+            for i, key in enumerate(input_text):
+                self.tableWidget.setItem(row_index, i, QtWidgets.QTableWidgetItem(key))
+                input_text[key].setText("")
+                
+
+            
 
     def setupUi(self, MainWindow):
 
@@ -86,7 +107,7 @@ class Ui_MainWindow(object):
         self.frame_3.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_3.setObjectName("frame_3")
 
-        self.add = QtWidgets.QPushButton(self.frame_3)
+        self.add = QtWidgets.QPushButton(self.frame_3, clicked = lambda: self.insert())
         self.add.setGeometry(QtCore.QRect(30, 20, 93, 28))
         self.add.setObjectName("add")
 
