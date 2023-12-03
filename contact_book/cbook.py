@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
 
+    # Insert Element to table
     def insert(self):
 
         name = self.name_input.text()
@@ -10,20 +11,35 @@ class Ui_MainWindow(object):
         email = self.email_input.text()
         address = self.address_input.text()
 
+        # Dictionary of the input field 
+        input_text = {name: self.name_input, phone: self.ph_input, email: self.email_input, address: self.address_input}  
+
         
-        if name and phone and email and address is not None:
+        if "" not in input_text:
 
             row_index = self.tableWidget.rowCount()
             self.tableWidget.insertRow(row_index)
-
-            # Dictionary of the input field 
-            input_text = {name: self.name_input, phone: self.ph_input, email: self.email_input, address: self.address_input}            
+          
 
             for i, key in enumerate(input_text):
                 self.tableWidget.setItem(row_index, i, QtWidgets.QTableWidgetItem(key))
                 input_text[key].setText("")
-                
 
+        else:
+            d_Box = QtWidgets.QMessageBox()
+            d_Box.setWindowTitle("Incomplete !!")
+            d_Box.setText(f"The Table is Incomp")
+                
+    # Delete element from Table
+    def remove(self):
+        selected_indexes = self.tableWidget.selectedIndexes()
+
+        # Collect unique row indices from selected indexes
+        rows_to_remove = set(index.row() for index in selected_indexes)
+
+        # Remove rows in reverse order to avoid index issues
+        for row in sorted(rows_to_remove, reverse=True):
+            self.tableWidget.removeRow(row)
             
 
     def setupUi(self, MainWindow):
@@ -111,9 +127,9 @@ class Ui_MainWindow(object):
         self.add.setGeometry(QtCore.QRect(30, 20, 93, 28))
         self.add.setObjectName("add")
 
-        self.clear = QtWidgets.QPushButton(self.frame_3)
+        self.clear = QtWidgets.QPushButton(self.frame_3, clicked = lambda: self.remove())
         self.clear.setGeometry(QtCore.QRect(160, 20, 93, 28))
-        self.clear.setObjectName("clear")
+        self.clear.setObjectName("delete")
 
         self.edit = QtWidgets.QPushButton(self.frame_3)
         self.edit.setGeometry(QtCore.QRect(280, 20, 93, 28))
