@@ -57,6 +57,33 @@ class Ui_MainWindow(object):
             for col_count, col_data in enumerate(row_data):
                 self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
 
+    # Save Data
+    def save_data(self):
+        conn = sqlite3.connect("contact_book.db")
+        cur = conn.cursor()
+
+        name, ok = QtWidgets.QInputDialog.getText(self, "Save", "Enter Name: ", QtWidgets.QLineEdit.Normal, QtCore.QDir().home().dirName())
+
+        if ok and name:
+
+            command = f""" CREATE TABLE {name} ( 
+                Name VARCHAR(30) NOT NULL,
+                Number VARCHAR(10)  NOT NULL,
+                Email VARCHAR(30) NOT NULL,
+                Address VARCHAR(100) NOT NULL
+            ); """
+
+            try:
+                cur.execute(command)
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(self, "Error", "Invalid Name", buttons=QtWidgets.QMessageBox.Ok)
+                self.save_data()
+            
+            
+
+            
+
+
 
     def setupUi(self, MainWindow):
 
