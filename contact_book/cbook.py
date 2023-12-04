@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sqlite3
 
 
 class Ui_MainWindow(object):
@@ -28,7 +29,9 @@ class Ui_MainWindow(object):
         else:
             d_Box = QtWidgets.QMessageBox()
             d_Box.setWindowTitle("Incomplete !!")
-            d_Box.setText(f"The Table is Incomp")
+            d_Box.setText(f"Input is Incomplete")
+            d_Box.addButton(QtWidgets.QPushButton("OK"), QtWidgets.QMessageBox.NoRole)
+            d_Box.exec_()
                 
     # Delete element from Table
     def remove(self):
@@ -40,7 +43,20 @@ class Ui_MainWindow(object):
         # Remove rows in reverse order to avoid index issues
         for row in sorted(rows_to_remove, reverse=True):
             self.tableWidget.removeRow(row)
-            
+      
+    # Load Data  
+    def load(self):
+        conn = sqlite3.connect("demo.db")
+        self.c = conn.cursor()
+        result = self.c.execute("""SELECT * FROM demo_table""")
+
+        self.tableWidget.setRowCount(0)
+
+        for row_count, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_count)
+            for col_count, col_data in enumerate(row_data):
+                self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
+
 
     def setupUi(self, MainWindow):
 
@@ -131,17 +147,17 @@ class Ui_MainWindow(object):
         self.clear.setGeometry(QtCore.QRect(160, 20, 93, 28))
         self.clear.setObjectName("delete")
 
-        self.edit = QtWidgets.QPushButton(self.frame_3)
-        self.edit.setGeometry(QtCore.QRect(280, 20, 93, 28))
-        self.edit.setObjectName("edit")
-
         self.save = QtWidgets.QPushButton(self.frame_3)
-        self.save.setGeometry(QtCore.QRect(410, 20, 93, 28))
+        self.save.setGeometry(QtCore.QRect(280, 20, 93, 28))
         self.save.setObjectName("save")
 
         self.open = QtWidgets.QPushButton(self.frame_3)
-        self.open.setGeometry(QtCore.QRect(530, 20, 93, 28))
+        self.open.setGeometry(QtCore.QRect(410, 20, 93, 28))
         self.open.setObjectName("open")
+
+        self.exit = QtWidgets.QPushButton(self.frame_3, clicked = lambda: exit())
+        self.exit.setGeometry(QtCore.QRect(530, 20, 93, 28))
+        self.exit.setObjectName("exit")
 
         self.frame_4 = QtWidgets.QFrame(self.centralwidget)
         self.frame_4.setGeometry(QtCore.QRect(20, 320, 651, 281))
@@ -187,9 +203,9 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Address :"))
         self.add.setText(_translate("MainWindow", "Add"))
         self.clear.setText(_translate("MainWindow", "Clear"))
-        self.edit.setText(_translate("MainWindow", "Edit"))
         self.save.setText(_translate("MainWindow", "Save"))
         self.open.setText(_translate("MainWindow", "Open"))
+        self.exit.setText(_translate("MainWindow", "Exit"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
