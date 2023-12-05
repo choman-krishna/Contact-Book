@@ -49,17 +49,36 @@ class Ui_MainWindow(object):
             self.tableWidget.removeRow(row)
       
     # Load Data  
-    # def load(self):
-    #     conn = sqlite3.connect("demo.db")
-    #     self.c = conn.cursor()
-    #     result = self.c.execute("""SELECT * FROM demo_table""")
+    def load(self, name):
+                
+        print(name)
+        result = self.cur.execute(f"""SELECT * FROM {name}""")
 
-    #     self.tableWidget.setRowCount(0)
+        self.tableWidget.setRowCount(0)
 
-    #     for row_count, row_data in enumerate(result):
-    #         self.tableWidget.insertRow(row_count)
-    #         for col_count, col_data in enumerate(row_data):
-    #             self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
+        for row_count, row_data in enumerate(result):
+            self.tableWidget.insertRow(row_count)
+            for col_count, col_data in enumerate(row_data):
+                self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
+    
+    # DropDown msg box
+    def dropdown_box(self):
+        l_box = QtWidgets.QMessageBox()
+        l_box.setWindowTitle("Contact Saved")
+
+        dropdown = QtWidgets.QComboBox(l_box)
+
+        # fetch all table name 
+        self.cur.execute("""SELECT name FROM sqlite_master WHERE type ='table' """)
+        table_list = self.cur.fetchall()
+
+        # create item for each table
+        for i in range(len(table_list)):
+            dropdown.addItem(table_list[i][0])
+
+
+        dropdown.activated[str].connect(self.load)
+        l_box.exec_()
 
     # Save Data
     def save_data(self):
@@ -218,7 +237,7 @@ class Ui_MainWindow(object):
         self.save.setGeometry(QtCore.QRect(280, 20, 93, 28))
         self.save.setObjectName("save")
 
-        self.open = QtWidgets.QPushButton(self.frame_3)
+        self.open = QtWidgets.QPushButton(self.frame_3, clicked = lambda: self.dropdown_box())
         self.open.setGeometry(QtCore.QRect(410, 20, 93, 28))
         self.open.setObjectName("open")
 
