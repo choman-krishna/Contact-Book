@@ -64,7 +64,8 @@ class Ui_MainWindow(object):
     # DropDown msg box
     def dropdown_box(self):
         l_box = QtWidgets.QMessageBox()
-        l_box.setWindowTitle("Contact Saved")
+        l_box.setWindowTitle("Saved")
+        l_box.setWindowIcon(QtGui.QIcon(r'contact_book\logo.png'))
 
         dropdown = QtWidgets.QComboBox(l_box)
 
@@ -267,6 +268,7 @@ class Ui_MainWindow(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(3, item)
         self.tableWidget.verticalHeader().setStretchLastSection(False)
+        
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 687, 26))
@@ -281,7 +283,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Contact Book v1.0"))
+        MainWindow.setWindowIcon(QtGui.QIcon(r'contact_book\logo.png'))
         self.label.setText(_translate("MainWindow", "Contact Book"))
         self.label_2.setText(_translate("MainWindow", "Ph. Number :"))
         self.label_3.setText(_translate("MainWindow", "Name :"))
