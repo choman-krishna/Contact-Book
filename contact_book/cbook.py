@@ -4,6 +4,10 @@ import sqlite3
 
 class Ui_MainWindow(object):
 
+    def __init__(self):
+        self.conn = sqlite3.connect("contact_book.db")
+        self.cur = self.conn.cursor()
+
     # Insert Element to table
     def insert(self):
 
@@ -45,41 +49,77 @@ class Ui_MainWindow(object):
             self.tableWidget.removeRow(row)
       
     # Load Data  
-    def load(self):
-        conn = sqlite3.connect("demo.db")
-        self.c = conn.cursor()
-        result = self.c.execute("""SELECT * FROM demo_table""")
+    # def load(self):
+    #     conn = sqlite3.connect("demo.db")
+    #     self.c = conn.cursor()
+    #     result = self.c.execute("""SELECT * FROM demo_table""")
 
-        self.tableWidget.setRowCount(0)
+    #     self.tableWidget.setRowCount(0)
 
-        for row_count, row_data in enumerate(result):
-            self.tableWidget.insertRow(row_count)
-            for col_count, col_data in enumerate(row_data):
-                self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
+    #     for row_count, row_data in enumerate(result):
+    #         self.tableWidget.insertRow(row_count)
+    #         for col_count, col_data in enumerate(row_data):
+    #             self.tableWidget.setItem(row_count, col_count, QtWidgets.QTableWidgetItem(str(col_data)))
 
     # Save Data
     def save_data(self):
-        conn = sqlite3.connect("contact_book.db")
-        cur = conn.cursor()
 
-        name, ok = QtWidgets.QInputDialog.getText(self, "Save", "Enter Name: ", QtWidgets.QLineEdit.Normal, QtCore.QDir().home().dirName())
+        self.name, ok = QtWidgets.QInputDialog.getText(QtWidgets.QMainWindow(), "Save", "Enter Name: ", QtWidgets.QLineEdit.Normal, "")
 
-        if ok and name:
+        if ok and self.name:
+            self.create_table()
+            self.read_table()
+            self.insert_data()
+            print("Data inserted")
+        else:
+            msg_box = QtWidgets.QMessageBox.warning(QtWidgets.QMainWindow(), "Error", "Invalid Name", QtWidgets.QMessageBox.Ok)
+            msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
-            command = f""" CREATE TABLE {name} ( 
-                Name VARCHAR(30) NOT NULL,
-                Number VARCHAR(10)  NOT NULL,
-                Email VARCHAR(30) NOT NULL,
-                Address VARCHAR(100) NOT NULL
-            ); """
+        
+    # Read Table
+    def read_table(self):
+        row_count = self.tableWidget.rowCount()
+        col_count = self.tableWidget.columnCount()
 
-            try:
-                cur.execute(command)
-            except Exception as e:
-                QtWidgets.QMessageBox.warning(self, "Error", "Invalid Name", buttons=QtWidgets.QMessageBox.Ok)
-                self.save_data()
-            
-            
+        for row in range(row_count):
+            self.content = []
+            for col in range(col_count):
+                widItem = self.tableWidget.item(row, col)
+
+                if (widItem and widItem.text):
+                    self.content.append(widItem.text())
+                else:
+                    self.content.append('NULL')
+
+    # Insert Data to DB
+    def insert_data(self):
+        comstr = f""" INSERT INTO {self.name} (Name, Number, Email, Address) VALUES (?, ?, ?, ?)"""
+        try:
+            self.cur.execute(comstr,self.content)
+            self.conn.commit()
+        except Exception as e:
+            msg_box = QtWidgets.QMessageBox.warning(QtWidgets.QMainWindow(), "Error", "Error while Inserting", QtWidgets.QMessageBox.Ok)
+            msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
+
+        
+
+    # Create Table
+    def create_table(self):   
+
+        command = f""" CREATE TABLE {self.name} ( 
+            Name VARCHAR(30) NOT NULL,
+            Number VARCHAR(10)  NOT NULL,
+            Email VARCHAR(30) NOT NULL,
+            Address VARCHAR(100) NOT NULL
+        ); """
+
+        try:
+            self.cur.execute(command)
+            self.conn.commit()
+        except Exception:
+            QtWidgets.QMessageBox.warning(QtWidgets.QMainWindow(), "Error", "Invalid Name", QtWidgets.QMessageBox.Ok)
+            self.save_data()           
+
 
             
 
@@ -174,7 +214,7 @@ class Ui_MainWindow(object):
         self.clear.setGeometry(QtCore.QRect(160, 20, 93, 28))
         self.clear.setObjectName("delete")
 
-        self.save = QtWidgets.QPushButton(self.frame_3)
+        self.save = QtWidgets.QPushButton(self.frame_3, clicked = lambda: self.save_data())
         self.save.setGeometry(QtCore.QRect(280, 20, 93, 28))
         self.save.setObjectName("save")
 
