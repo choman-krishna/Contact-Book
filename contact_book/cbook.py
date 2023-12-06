@@ -53,8 +53,9 @@ class Ui_MainWindow(object):
                 
         print(name)
         result = self.cur.execute(f"""SELECT * FROM {name}""")
+        # print(self.cur.fetchall())
 
-        self.tableWidget.setRowCount(0)
+        self.tableWidget.setRowCount(10)
 
         for row_count, row_data in enumerate(result):
             self.tableWidget.insertRow(row_count)
@@ -89,7 +90,7 @@ class Ui_MainWindow(object):
         if ok and self.name:
             self.create_table()
             self.read_table()
-            self.insert_data()
+            self.conn.commit()
             print("Data inserted")
         else:
             msg_box = QtWidgets.QMessageBox.warning(QtWidgets.QMainWindow(), "Error", "Invalid Name", QtWidgets.QMessageBox.Ok)
@@ -110,6 +111,8 @@ class Ui_MainWindow(object):
                     self.content.append(widItem.text())
                 else:
                     self.content.append('NULL')
+                
+            self.insert_data()
 
     # Insert Data to DB
     def insert_data(self):
