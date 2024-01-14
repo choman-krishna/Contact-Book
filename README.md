@@ -1,5 +1,4 @@
-# Contact-Book-CODSOFT
-task 5 - codsoft internship.
+# Contact-Book
 A simple contact book application built with PyQt5 for the graphical user interface and SQLite for database functionality.
 
 ## Table of Contents
